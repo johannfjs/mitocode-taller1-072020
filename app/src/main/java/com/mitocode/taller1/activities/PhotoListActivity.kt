@@ -7,6 +7,12 @@ import com.mitocode.taller1.adapters.PhotoListAdapter
 import com.mitocode.taller1.databinding.ActivityPhotoListBinding
 import com.mitocode.taller1.models.AlbumModel
 import com.mitocode.taller1.models.PhotoModel
+import com.mitocode.taller1.net.ConfiguracionRetrofit
+import com.mitocode.taller1.net.Metodo
+import com.mitocode.taller1.response.PhotoResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PhotoListActivity : AppCompatActivity(), PhotoListAdapter.PhotoListCallback {
     private lateinit var binding: ActivityPhotoListBinding
@@ -25,26 +31,26 @@ class PhotoListActivity : AppCompatActivity(), PhotoListAdapter.PhotoListCallbac
             binding.rvPhotos.layoutManager = GridLayoutManager(this, 2)
             binding.rvPhotos.adapter = adapter
 
-            val data = ArrayList<PhotoModel>()
-            data.add(
-                PhotoModel(
-                    1,
-                    1,
-                    "Foto 1",
-                    "https://i.pinimg.com/474x/8b/da/ca/8bdaca81d5ddbaeb92b61d6b5787d866.jpg",
-                    "https://i.pinimg.com/474x/8b/da/ca/8bdaca81d5ddbaeb92b61d6b5787d866.jpg"
-                )
-            )
-            data.add(
-                PhotoModel(
-                    2,
-                    2,
-                    "Foto 2",
-                    "https://i.pinimg.com/474x/8b/da/ca/8bdaca81d5ddbaeb92b61d6b5787d866.jpg",
-                    "https://i.pinimg.com/474x/8b/da/ca/8bdaca81d5ddbaeb92b61d6b5787d866.jpg"
-                )
-            )
-            adapter.addItems(data)
+            val retrofit = ConfiguracionRetrofit.getConfiguration()!!.create(Metodo::class.java)
+            val call = retrofit.obtenerFotos()
+            call.enqueue(object : Callback<ArrayList<PhotoResponse>> {
+                override fun onFailure(call: Call<ArrayList<PhotoResponse>>, t: Throwable) {
+
+                }
+
+                override fun onResponse(
+                    call: Call<ArrayList<PhotoResponse>>,
+                    response: Response<ArrayList<PhotoResponse>>
+                ) {
+                    val respuesta = response.body()
+                    val data = ArrayList<PhotoModel>()
+                    for (itemFoto in respuesta!!) {
+                        data.add(PhotoModel(itemFoto.id, 0, itemFoto.titulo, itemFoto.url, ""))
+                    }
+                    adapter.addItems(data)
+                }
+
+            })
         }
     }
 

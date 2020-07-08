@@ -14,11 +14,16 @@ class PhotoListAdapter(val callback: PhotoListCallback) :
     private val list = ArrayList<PhotoModel>()
     private lateinit var binding: ItemPhotoListBinding
 
+    /*
+    private val list = ArrayList<PhotoModel>()
+    private ArrayList<PhotoModel> list;
+     */
+
     inner class PhotoListViewHolder(itemView: View, private val context: Context) :
         RecyclerView.ViewHolder(itemView) {
         fun bind(model: PhotoModel, position: Int) {
             binding.tvTitle.text = model.title
-            Glide.with(context).load(model.url).into(binding.ivImage);
+            Glide.with(context).load(model.url).into(binding.ivImage)
             binding.root.setOnClickListener {
                 callback.onClick(model)
             }
